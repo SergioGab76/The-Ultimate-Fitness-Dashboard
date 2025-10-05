@@ -1,0 +1,3 @@
+cloudrun:
+  service: fitness-dashboard
+  region: us-central1
