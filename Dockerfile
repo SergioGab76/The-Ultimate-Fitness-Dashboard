@@ -1,38 +1,41 @@
-# ----- STAGE 1: The Builder -----
-# Start with a full Node.js image to get all the build tools
+# ----- STAGE 1: Builder -----
+# Use a full Node.js image to install and build the app
 FROM node:18 AS builder
 
-# Set the working directory
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files
+# Copy dependency definitions first for efficient caching
 COPY package*.json ./
 
-# Install all project dependencies
+# Install all dependencies (including dev)
 RUN npm install
 
-# Copy the rest of your source code
+# Copy the rest of the app’s source code
 COPY . .
 
-# Run the build command to create the final optimized app
+# Build the optimized static files (output will go to /app/dist for Vite, or /app/build for CRA)
 RUN npm run build
 
-# ----- STAGE 2: The Runner -----
-# Start with a lightweight, minimal Node.js image for the final container
+# ----- STAGE 2: Runner -----
+# Use a lightweight Node.js runtime for serving static files
 FROM node:18-alpine
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Install 'serve', the static web server
+# Install the static file server globally
 RUN npm install -g serve
 
-# --- THIS IS THE CORRECTED LINE ---
-# Copy ONLY the built application (from the 'dist' folder) from the 'builder' stage
-COPY --from=builder /app/dist .
+# Copy the built static files from the builder stage
+# Adjust path depending on your build system (Vite → dist, CRA → build)
+COPY --from=builder /app/dist ./ 
 
-# Tell Cloud Run that the server inside the container will listen on port 3000
-EXPOSE 3000
+# Cloud Run provides a PORT environment variable (default 8080)
+ENV PORT=8080
 
-# The command to start the web server and serve the app
-CMD [ "serve", "-s", ".", "-l", "3000" ]
+# Document which port the container listens on
+EXPOSE 8080
+
+# Start the web server and bind to the dynamic port
+CMD ["sh", "-c", "serve -s . -l $PORT"]
