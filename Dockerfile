@@ -3,16 +3,12 @@ FROM node:20 AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy source code
+# Copy source and build
 COPY . .
-
-# Build the app
 RUN npm run build
 
 
@@ -21,15 +17,15 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install a simple static server
+# Install static server
 RUN npm install -g serve
 
-# Copy only the built output
+# Copy built files
 COPY --from=builder /app/dist .
 
-# Expose the dynamic port that Cloud Run sets
+# Use dynamic port from Cloud Run
 ENV PORT=8080
 EXPOSE 8080
 
-# Run the static server using the Cloud Run port
+# ✅ Serve using the dynamic port
 CMD ["sh", "-c", "serve -s . -l $PORT"]
