@@ -105,7 +105,7 @@ const App = () => {
 
   const { workouts, isLoading: workoutsLoading, error: workoutsError, retry: retryWorkouts } = useWorkouts(selectedClient);
   
-  const [filter, setFilter] = useState('last-10');
+  const [filter, setFilter] = useState('all-time');
   const [customRange, setCustomRange] = useState({ start: '', end: '' });
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   
