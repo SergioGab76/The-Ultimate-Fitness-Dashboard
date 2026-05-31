@@ -39,6 +39,7 @@ export interface ProcessedExerciseStats {
   lastWeight: number;
   progressDisplay: string;
   progressIsPositive: boolean;
+  progressPercentage: number;
   totalReps: number;
   sessionCount: number;
   dataPoints: DataPoint[];

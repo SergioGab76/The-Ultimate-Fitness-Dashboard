@@ -205,17 +205,20 @@ const App = () => {
       const ABSOLUTE_GAIN_THRESHOLD = 2;
       let progressDisplay: string;
       let progressIsPositive: boolean;
+      let progressPercentage: number;
       const gain = lastWeight - firstWeight;
 
       if (firstWeight < ABSOLUTE_GAIN_THRESHOLD) {
         // For exercises starting with very light or no weight (bodyweight), show absolute gain.
         progressDisplay = `${gain >= 0 ? '+' : ''}${formatNumber(gain, { maximumFractionDigits: 1 })} kg`;
         progressIsPositive = gain >= 0;
+        progressPercentage = firstWeight > 0 ? (gain / firstWeight) * 100 : (gain > 0 ? gain * 100 : 0);
       } else {
         // For all other exercises, show percentage gain.
         const percentage = (gain / firstWeight) * 100;
         progressDisplay = `${percentage >= 0 ? '+' : ''}${formatNumber(percentage, { maximumFractionDigits: 1 })}%`;
         progressIsPositive = percentage >= 0;
+        progressPercentage = percentage;
       }
       
       const dateRange = data.dataPoints.length > 1
@@ -229,12 +232,18 @@ const App = () => {
         lastWeight,
         progressDisplay,
         progressIsPositive,
+        progressPercentage,
         totalReps: data.totalReps,
         sessionCount: data.dataPoints.length,
         dataPoints: data.dataPoints,
         dateRange,
       };
-    }).sort((a, b) => b.sessionCount - a.sessionCount);
+    }).sort((a, b) => {
+      if (b.progressPercentage !== a.progressPercentage) {
+        return b.progressPercentage - a.progressPercentage;
+      }
+      return b.sessionCount - a.sessionCount;
+    });
   }, [filteredWorkouts]);
 
   // Effect to turn off recalculating indicator and update status message
