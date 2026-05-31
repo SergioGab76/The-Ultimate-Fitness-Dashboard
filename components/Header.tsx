@@ -105,7 +105,7 @@ export const Header: React.FC<HeaderProps> = ({ clientName, clientList, selected
   return (
     <header className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-slate-800/50 rounded-lg ${authState !== 'admin' ? 'sm:justify-center' : 'sm:justify-between'}`}>
       <div className="flex items-center gap-4">
-          <img src="https://assets.zyrosite.com/dJoby7nkNOfbKLv3/image-5-mjE4G1wPvGIVBng8.png" alt="Dashboard Logo" className="h-10 w-auto" />
+          <img src="/logo.png" alt="Dashboard Logo" className="h-10 w-auto" />
           <h1 className="text-xl sm:text-2xl font-bold text-white">
             <span className="text-slate-400 font-medium">Deportista:</span> <span className="text-indigo-400">{clientName}</span>
           </h1>
